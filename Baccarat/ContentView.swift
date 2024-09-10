@@ -72,15 +72,24 @@ struct ContentView: View {
                     
                     let x = geometry.frame(in: .global).origin.x
                     let y = geometry.frame(in: .global).origin.y
-                    ArcShape(
-                        center: CGPoint(x: x, y: width/2),
-                        radius: height * 3/2,
-                        startAngle: .degrees(0),
-                        endAngle: .degrees(180),
-                        clockwise: true
-                    )
-                    .stroke(Color.black, lineWidth: 12)
-                    .frame(width: width, height: height)
+                    
+                    let tieCenter = CGPoint(x: width/2, y: y)
+                    let tieRadius = CGFloat(height * 5/6)
+                    // For player 1
+                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(30), endAngle: .degrees(55))
+                    
+                    
+                    // for Payer 2
+                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(60), endAngle: .degrees(85))
+                    
+                    
+                    // For Player 3
+                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(95), endAngle: .degrees(120))
+                    
+                    
+                    // for Player 4
+                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(125), endAngle: .degrees(150))
+                    
                 }
                     .frame(width: width, height: height)
                     .padding(12)
@@ -220,43 +229,26 @@ struct BankerHandView: View {
 }
 
 
-// betting area customziation
-struct ArcShape: Shape {
-    var center: CGPoint
-    var radius: CGFloat
-    var startAngle: Angle
-    var endAngle: Angle
-    var clockwise: Bool
+
+struct TieAreaView: View {
+    let center: CGPoint
+    let radius: CGFloat
+    let startAngle: Angle
+    let endAngle: Angle
     
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        
-        let startAngleInRadians = CGFloat(startAngle.radians)
-        let endAndgleInRadians = CGFloat(endAngle.radians)
-        
-        
-        // graphics context
-        UIGraphicsBeginImageContext(rect.size)
-        guard let context = UIGraphicsGetCurrentContext() else {
-            return path
+    var body: some View {
+        Path { path in
+            path.addArc(
+                center: center,
+                radius: radius,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                clockwise: false
+            )
         }
-        
-        context.addArc(center: center,
-                       radius: radius,
-                       startAngle: startAngleInRadians,
-                       endAngle: endAndgleInRadians,
-                       clockwise: clockwise
-        )
-        
-        context.setStrokeColor(UIColor.black.cgColor)
-        context.setLineWidth(8)
-        context.strokePath()
-        
-        /// Add draw path
-        path.addPath(Path(context.path ?? CGPath(rect: rect, transform: .none)))
-        
-        UIGraphicsEndImageContext()
-        
-        return path
+        .stroke(Color(UIColor.systemGray2), lineWidth: 32)
+        .onTapGesture {
+            print("\(startAngle)")
+        }
     }
 }
