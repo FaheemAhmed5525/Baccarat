@@ -12,6 +12,10 @@ struct ContentView: View {
     var sidesColor = UIColor(red: 58/255, green: 146/255, blue: 24/255, alpha: 1.0)
     var centeralColor = UIColor(red: 70/255, green: 180/255, blue: 24/255, alpha: 1.0)
    
+    var players: Array<Player> = [Player(playerNum: 1), Player(playerNum: 2), Player(playerNum: 3), Player(playerNum: 4)]
+    
+    
+    
     @State var bettingAmount : Int = 20
     var body: some View {
         
@@ -53,7 +57,7 @@ struct ContentView: View {
                                 ChipStackView(width: width/2, height: height/8)
                                 
                                 //Betting Amount Label
-                                Text("Betting Amount: \(bettingAmount)")
+                                Text("Betting Amount: \(bettingAmount)$")
                             }
                             // ShoeStack
                             ShoeStackView(width: width/5, height: height/4)
@@ -75,49 +79,7 @@ struct ContentView: View {
                         }
                         //Spacer(minLength: 00)
                         Spacer()
-                        HStack{
-                            
-                            VStack {
-                                Button("+5$") {
-                                    bettingAmount += 5
-                                }
-                                Button("+20$") {
-                                    bettingAmount += 20
-                                }
-                                Button("+100$") {
-                                    bettingAmount += 100
-                                }
-                                Button("+1000$") {
-                                    bettingAmount += 1000
-                                }
-                            }
-                            .padding(20)
-                            Spacer()
-                            
-                            VStack {
-                                Button("-5$") {
-                                    if bettingAmount >= 5 {
-                                        bettingAmount -= 5
-                                    }
-                                }
-                                Button("-20$") {
-                                    if bettingAmount >= 20 {
-                                        bettingAmount -= 20
-                                    }
-                                }
-                                Button("-100$") {
-                                    if bettingAmount >= 100 {
-                                        bettingAmount -= 100
-                                    }
-                                }
-                                Button("-1000$") {
-                                    if bettingAmount >= 1000 {
-                                        bettingAmount -= 1000
-                                    }
-                                }
-                            }
-                            .padding(20)
-                        }
+                        BettingAmountChangeButtons
                     }
                     
                     //let x = geometry.frame(in: .global).origin.x
@@ -178,6 +140,52 @@ struct ContentView: View {
             
         }
         
+    }
+    
+    var BettingAmountChangeButtons: some View {
+        HStack{
+            
+            VStack {
+                Button("+5$") {
+                    bettingAmount += 5
+                }
+                Button("+20$") {
+                    bettingAmount += 20
+                }
+                Button("+100$") {
+                    bettingAmount += 100
+                }
+                Button("+1000$") {
+                    bettingAmount += 1000
+                }
+            }
+            .padding(20)
+            Spacer()
+            
+            VStack {
+                Button("-5$") {
+                    if bettingAmount >= 25 {
+                        bettingAmount -= 5
+                    }
+                }
+                Button("-20$") {
+                    if bettingAmount >= 40 {
+                        bettingAmount -= 20
+                    }
+                }
+                Button("-100$") {
+                    if bettingAmount >= 120 {
+                        bettingAmount -= 100
+                    }
+                }
+                Button("-1000$") {
+                    if bettingAmount >= 1020 {
+                        bettingAmount -= 1000
+                    }
+                }
+            }
+            .padding(20)
+        }
     }
 }
 
