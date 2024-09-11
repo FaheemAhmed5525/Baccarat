@@ -25,7 +25,7 @@ struct ContentView: View {
                 
                 //Getting width and heigh with respect to current screen
                 let height = geometry.size.height
-                let width = height * 7/4
+                let width = height * 15/8
     
 
                 
@@ -70,25 +70,54 @@ struct ContentView: View {
                         Spacer(minLength: 00)
                     }
                     
-                    let x = geometry.frame(in: .global).origin.x
+                    //let x = geometry.frame(in: .global).origin.x
                     let y = geometry.frame(in: .global).origin.y
+                    let arcCenter = CGPoint(x: width/2, y: y)
                     
-                    let tieCenter = CGPoint(x: width/2, y: y)
-                    let tieRadius = CGFloat(height * 5/6)
+                    let tieArcRadius = CGFloat(height * 5/6)
+                    
                     // For player 1
-                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(30), endAngle: .degrees(55))
+                    TieAreaView(forPlayer: 1, center: arcCenter, radius: tieArcRadius, startAngle: .degrees(30), endAngle: .degrees(55))
                     
                     
                     // for Payer 2
-                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(60), endAngle: .degrees(85))
+                    TieAreaView(forPlayer: 2, center: arcCenter, radius: tieArcRadius, startAngle: .degrees(60), endAngle: .degrees(85))
                     
                     
                     // For Player 3
-                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(95), endAngle: .degrees(120))
+                    TieAreaView(forPlayer: 3, center: arcCenter, radius: tieArcRadius, startAngle: .degrees(95), endAngle: .degrees(120))
                     
                     
                     // for Player 4
-                    TieAreaView(center: tieCenter, radius: tieRadius, startAngle: .degrees(125), endAngle: .degrees(150))
+                    TieAreaView(forPlayer: 4, center: arcCenter, radius: tieArcRadius, startAngle: .degrees(125), endAngle: .degrees(150))
+                    
+                    // Banker betting area
+                    let bankerArcRadius = CGFloat(height * 11/12)
+                    //for Player 1
+                    BankerAreaView(forPlayer: 1, center: arcCenter, radius: bankerArcRadius, startAngle: .degrees(30), endAngle: .degrees(55))
+                    
+                    //for Player 2
+                    BankerAreaView(forPlayer: 2, center: arcCenter, radius: bankerArcRadius, startAngle: .degrees(60), endAngle: .degrees(85))
+                    
+                    //for Player 3
+                    BankerAreaView(forPlayer: 3, center: arcCenter, radius: bankerArcRadius, startAngle: .degrees(95), endAngle: .degrees(120))
+                    
+                    //for Player 4
+                    BankerAreaView(forPlayer: 4, center: arcCenter, radius: bankerArcRadius, startAngle: .degrees(125), endAngle: .degrees(150))
+                    
+                    //Player betting are
+                    let playerArcRadius = CGFloat(height)
+                    //for Player 1
+                    PlayerAreaView(forPlayer: 1, center: arcCenter, radius: playerArcRadius, startAngle: .degrees(30), endAngle: .degrees(55))
+                    
+                    //for Player 2
+                    PlayerAreaView(forPlayer: 2, center: arcCenter, radius: playerArcRadius, startAngle: .degrees(60), endAngle: .degrees(85))
+                    
+                    //for Player 3
+                    PlayerAreaView(forPlayer: 3, center: arcCenter, radius: playerArcRadius, startAngle: .degrees(95), endAngle: .degrees(120))
+                    
+                    //for Player 4
+                    PlayerAreaView(forPlayer: 4, center: arcCenter, radius: playerArcRadius, startAngle: .degrees(125), endAngle: .degrees(150))
                     
                 }
                     .frame(width: width, height: height)
@@ -229,8 +258,9 @@ struct BankerHandView: View {
 }
 
 
-
+/// Betting area for tie
 struct TieAreaView: View {
+    let forPlayer: Int
     let center: CGPoint
     let radius: CGFloat
     let startAngle: Angle
@@ -246,9 +276,67 @@ struct TieAreaView: View {
                 clockwise: false
             )
         }
+        .strokedPath(StrokeStyle(lineCap: .round))
         .stroke(Color(UIColor.systemGray2), lineWidth: 32)
         .onTapGesture {
-            print("\(startAngle)")
+            print("Player \(forPlayer) bets on Tie")
+        }
+    }
+}
+
+
+
+/// Betting area for Banker
+struct BankerAreaView: View {
+    let forPlayer: Int
+    let center: CGPoint
+    let radius: CGFloat
+    let startAngle: Angle
+    let endAngle: Angle
+    
+    var body: some View {
+        Path { path in
+            path.addArc(
+                center: center,
+                radius: radius,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                clockwise: false
+            )
+        }
+        .strokedPath(StrokeStyle(lineCap: .round))
+        .stroke(Color(UIColor.systemGray4), lineWidth: 32)
+        .onTapGesture {
+            print("Player \(forPlayer) bets on Banker")
+        }
+    }
+}
+
+/// Betting area for Player
+struct PlayerAreaView: View {
+    let forPlayer: Int
+    let center: CGPoint
+    let radius: CGFloat
+    let startAngle: Angle
+    let endAngle: Angle
+    
+    var body: some View {
+        Path { path in
+            path.addArc(
+                center: center,
+                radius: radius,
+                startAngle: startAngle,
+                endAngle: endAngle,
+                clockwise: false
+            )
+            
+        }
+        .strokedPath(StrokeStyle(lineCap: .round))
+        .stroke(Color(UIColor.systemGray6), lineWidth: 32)
+        
+        
+        .onTapGesture {
+            print("Player \(forPlayer) bets on Player")
         }
     }
 }
