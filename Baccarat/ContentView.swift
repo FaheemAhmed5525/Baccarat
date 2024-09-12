@@ -12,11 +12,11 @@ struct ContentView: View {
     var sidesColor = UIColor(red: 58/255, green: 146/255, blue: 24/255, alpha: 1.0)
     var centeralColor = UIColor(red: 70/255, green: 180/255, blue: 24/255, alpha: 1.0)
    
-    var players: Array<Player> = [Player(playerNum: 1), Player(playerNum: 2), Player(playerNum: 3), Player(playerNum: 4)]
+
+    
+    @State var bettingAmount: Int = 20
     
     
-    
-    @State var bettingAmount : Int = 20
     var body: some View {
         
         
@@ -50,7 +50,7 @@ struct ContentView: View {
 //                            let y = geometry.frame(in: .global).origin.y
                             
                             // DiscardPile
-                            DiscardPile(width: width/8, height: height/4)
+                            DiscardPile(width: width/10, height: height/4)
                 
                             VStack {
                                 //coins box
@@ -142,6 +142,13 @@ struct ContentView: View {
         
     }
     
+    
+    
+    
+    
+    
+    
+    /// button that allows player to set and change about of bet
     var BettingAmountChangeButtons: some View {
         HStack{
             
@@ -187,7 +194,32 @@ struct ContentView: View {
             .padding(20)
         }
     }
+    
+    /// button to change betValue
+    /// - Parameters:
+    ///   - playerIndex: Player number from players list.
+    ///   - newBet: New bet value for stact for that player  [playerIndex]
+    ///   - forStack: Stack on which player is betting,tie, banker or player
+    func changeBet(playerIndex: Int, newBet: Int, forStack: betStacks) {
+        
+        /// if bet on tie
+        if forStack == betStacks.tie {
+            Players.players[playerIndex].betOnTie = bettingAmount
+        }
+        // else if bet on banker
+        else if forStack == betStacks.banker {
+            Players.players[playerIndex].betOnBanker = bettingAmount
+        }
+        // else if bet on player {
+        else if forStack == betStacks.player {
+            Players.players[playerIndex].betOnPlayer = bettingAmount
+        }
+    }
 }
+
+
+
+
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func applicationDidFinishLaunching(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?)->UIInterfaceOrientationMask {
@@ -198,6 +230,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 #Preview {
     ContentView()
 }
+
+
 
 
 
@@ -213,13 +247,10 @@ struct DiscardPile: View {
             RoundedRectangle(cornerRadius: 8.0)
                 .stroke(Color.black)
                 .frame(width: width, height: height)
-                .padding(.trailing, 24)
+                .padding(.trailing, 36)
         } else {
-            Image("back")
-                .resizable()
-                .frame(width: width, height: height)
-                .cornerRadius(8)
-                .padding(.trailing, 24)
+            CardBackView(width: width, height: height)
+                .padding(.trailing, 36)
         }
         
     }
@@ -281,7 +312,7 @@ struct CardBackView: View {
     let height: CGFloat
     
     var body: some View {
-        Image("back")
+        Image("CardBack")
             .resizable()
             .frame(width: width, height: height)
             .cornerRadius(8)
@@ -337,6 +368,11 @@ struct TieAreaView: View {
         .strokedPath(StrokeStyle(lineCap: .round))
         .stroke(Color(UIColor.systemGray2), lineWidth: 32)
         .onTapGesture {
+            /// if user taps an already  selected stack of player, save betting amount for that stact for that player
+            if Players.selectedPlayerIndex == forPlayer && Players.selectedStack = betStacks.tie {
+                Players.players[forPlayer].betOnTie
+            }
+            
             print("Player \(forPlayer) bets on Tie")
         }
     }
