@@ -12,9 +12,99 @@ struct ContentView: View {
     var sidesColor = UIColor(red: 58/255, green: 146/255, blue: 24/255, alpha: 1.0)
     var centeralColor = UIColor(red: 70/255, green: 180/255, blue: 24/255, alpha: 1.0)
    
-
+    
+    @State var selectedPlayerIndex: Int = 10                      //Index is change to a player's stack when he taps a stack
+    @State var selectedStack: betStacks = betStacks.noStack  //no stack is selected by default
     
     @State var bettingAmount: Int = 20
+    
+    public var BettingAmount: Int {
+        get {
+            return bettingAmount
+        }
+        set {
+            bettingAmount = newValue
+        }
+    }
+    public func setBettingValue(bettingValue: Int) {
+        self.bettingAmount = bettingValue
+    }
+    public func getBettingValue () -> Int {
+        return self.bettingAmount
+    }
+    
+    
+    var players: Array<Player> = [Player(playerNum: 1), Player(playerNum: 2), Player(playerNum: 3), Player(playerNum: 4)]
+    
+    ///  change betValue
+    /// - Parameters:
+    ///   - playerIndex: Player number from players list.
+    ///   - newBet: New bet value for stact for that player  [playerIndex]
+    ///   - forStack: Stack on which player is betting,tie, banker or player
+    func changeBet(playerIndex: Int, forStack: betStacks) {
+            
+        /// if bet on tie
+        if forStack == betStacks.tie {
+            players[playerIndex].betOnTie = bettingAmount
+        }
+        
+        // else if bet on banker
+        else if forStack == betStacks.banker {
+            players[playerIndex].betOnBanker = bettingAmount
+        }
+            
+        // else if bet on player {
+        else if forStack == betStacks.player {
+            players[playerIndex].betOnPlayer = bettingAmount
+        }
+        
+        // else caller has passed ivalied arguments
+        else {
+            print("Invalid argumets for changing the bet")
+        }
+
+    }
+    
+    func stackTapped(playerIndex: Int, bettingStack: betStacks)->stackTapOption {
+        
+        if selectedPlayerIndex < players.count {
+            if playerIndex == selectedPlayerIndex {
+                changeBet(playerIndex: selectedPlayerIndex, forStack: bettingStack)
+                return stackTapOption.saved
+            }
+            else {
+                selectedPlayerIndex = playerIndex
+                
+                if bettingStack == betStacks.tie {
+                    bettingAmount = players[playerIndex].betOnTie
+                } else if bettingStack == betStacks.banker {
+                    bettingAmount = players[playerIndex].betOnBanker
+                } else {
+                    bettingAmount = players[playerIndex].betOnPlayer
+                }
+                
+                selectedStack = bettingStack
+                return stackTapOption.selected
+            }
+        }
+        else {
+            selectedPlayerIndex = playerIndex
+            
+            if bettingStack == betStacks.tie {
+                bettingAmount = players[playerIndex].betOnTie
+            } else if bettingStack == betStacks.banker {
+                bettingAmount = players[playerIndex].betOnBanker
+            } else {
+                bettingAmount = players[playerIndex].betOnPlayer
+            }
+            selectedStack = bettingStack
+            
+            return stackTapOption.selected
+        }
+    }
+    
+    
+   
     
     
     var body: some View {
@@ -195,26 +285,7 @@ struct ContentView: View {
         }
     }
     
-    /// button to change betValue
-    /// - Parameters:
-    ///   - playerIndex: Player number from players list.
-    ///   - newBet: New bet value for stact for that player  [playerIndex]
-    ///   - forStack: Stack on which player is betting,tie, banker or player
-    func changeBet(playerIndex: Int, newBet: Int, forStack: betStacks) {
-        
-        /// if bet on tie
-        if forStack == betStacks.tie {
-            Players.players[playerIndex].betOnTie = bettingAmount
-        }
-        // else if bet on banker
-        else if forStack == betStacks.banker {
-            Players.players[playerIndex].betOnBanker = bettingAmount
-        }
-        // else if bet on player {
-        else if forStack == betStacks.player {
-            Players.players[playerIndex].betOnPlayer = bettingAmount
-        }
-    }
+    
 }
 
 
@@ -368,10 +439,8 @@ struct TieAreaView: View {
         .strokedPath(StrokeStyle(lineCap: .round))
         .stroke(Color(UIColor.systemGray2), lineWidth: 32)
         .onTapGesture {
-            /// if user taps an already  selected stack of player, save betting amount for that stact for that player
-            if Players.selectedPlayerIndex == forPlayer && Players.selectedStack = betStacks.tie {
-                Players.players[forPlayer].betOnTie
-            }
+            ///
+            
             
             print("Player \(forPlayer) bets on Tie")
         }
