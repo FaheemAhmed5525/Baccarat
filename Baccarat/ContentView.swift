@@ -70,6 +70,8 @@ struct ContentView: View {
         if selectedPlayerIndex < players.count {
             if playerIndex == selectedPlayerIndex {
                 changeBet(playerIndex: selectedPlayerIndex, forStack: bettingStack)
+                selectedPlayerIndex = 10
+                selectedStack = betStacks.noStack
                 return stackTapOption.saved
             }
             else {
@@ -439,7 +441,8 @@ struct TieAreaView: View {
         .strokedPath(StrokeStyle(lineCap: .round))
         .stroke(Color(UIColor.systemGray2), lineWidth: 32)
         .onTapGesture {
-            ///
+            
+            stackTapped(playerIndex: forPlayer, bettingStack: betStacks.tie)
             
             
             print("Player \(forPlayer) bets on Tie")

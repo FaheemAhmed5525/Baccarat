@@ -28,3 +28,9 @@ enum betStacks {
     case player
     case noStack
 }
+
+class CurrentStack {
+    static var playerIndex = 0
+    static var betStack = betStacks.noStack
+    
+}
