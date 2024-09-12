@@ -16,25 +16,85 @@ struct ContentView: View {
     @State var selectedPlayerIndex: Int = 10                      //Index is change to a player's stack when he taps a stack
     @State var selectedStack: betStacks = betStacks.noStack  //no stack is selected by default
     
-    @State var bettingAmount: Int = 20
+    @State var bettingAmount: Int = 0
     
-    public var BettingAmount: Int {
-        get {
-            return bettingAmount
+    
+    
+    @State var players: Array<Player> = [Player(playerNum: 1), Player(playerNum: 2), Player(playerNum: 3), Player(playerNum: 4)]
+    
+    
+    
+    /// Description
+    /// - Parameters:
+    ///   - playerIndex: Index of player who tapped the stack
+    ///   - bettingStack: tapped stack ( tie, banker, player)
+    /// - Returns: whether player betting amout for that stack is saved or loaded
+    func stackTapped(playerIndex: Int, bettingStack: betStacks)->stackTapOption {
+        
+       
+        if selectedPlayerIndex < players.count {
+            if playerIndex == selectedPlayerIndex {
+                
+                //Save bet amount
+                changeBet(playerIndex: playerIndex, forStack: bettingStack)
+                
+                //unselecte the Player & his stack
+                selectedPlayerIndex = 10
+                selectedStack = betStacks.noStack
+                
+                //clear bettingAmout from pervious user
+                bettingAmount = 0
+                print("Changed values for Player\(playerIndex) with amount \(players[playerIndex-1].betOnTie)")
+                
+                return stackTapOption.saved
+            }
+            else {
+                
+                //saving previo bet
+                if selectedStack == betStacks.tie {
+                    players[selectedPlayerIndex].betOnTie = bettingAmount
+                }
+                else if selectedStack == betStacks.banker {
+                    players[selectedPlayerIndex].betOnBanker = bettingAmount
+                }
+                if selectedStack == betStacks.player {
+                    players[selectedPlayerIndex].betOnPlayer = bettingAmount
+                }
+                
+                
+
+                
+                if bettingStack == betStacks.tie {
+                    bettingAmount = players[playerIndex-1].betOnTie
+                } else if bettingStack == betStacks.banker {
+                    bettingAmount = players[playerIndex-1].betOnBanker
+                } else {
+                    bettingAmount = players[playerIndex-1].betOnPlayer
+                }
+                
+                selectedPlayerIndex = playerIndex
+                
+                selectedStack = bettingStack
+                return stackTapOption.selected
+            }
         }
-        set {
-            bettingAmount = newValue
+        else {
+            selectedPlayerIndex = playerIndex
+            
+            print("Selecting player \(playerIndex) with bet \(players[playerIndex-1].betOnTie) on tie")
+            
+            if bettingStack == betStacks.tie {
+                bettingAmount = players[playerIndex-1].betOnTie
+            } else if bettingStack == betStacks.banker {
+                bettingAmount = players[playerIndex-1].betOnBanker
+            } else {
+                bettingAmount = players[playerIndex-1].betOnPlayer
+            }
+            selectedStack = bettingStack
+            
+            return stackTapOption.selected
         }
     }
-    public func setBettingValue(bettingValue: Int) {
-        self.bettingAmount = bettingValue
-    }
-    public func getBettingValue () -> Int {
-        return self.bettingAmount
-    }
-    
-    
-    var players: Array<Player> = [Player(playerNum: 1), Player(playerNum: 2), Player(playerNum: 3), Player(playerNum: 4)]
     
     ///  change betValue
     /// - Parameters:
@@ -45,17 +105,18 @@ struct ContentView: View {
             
         /// if bet on tie
         if forStack == betStacks.tie {
-            players[playerIndex].betOnTie = bettingAmount
+            players[playerIndex-1].betOnTie = bettingAmount
+            print("Chaging player\(playerIndex) with values \(players[playerIndex-1].betOnTie) with betting value \(bettingAmount)")
         }
         
         // else if bet on banker
         else if forStack == betStacks.banker {
-            players[playerIndex].betOnBanker = bettingAmount
+            players[playerIndex-1].betOnBanker = bettingAmount
         }
             
         // else if bet on player {
         else if forStack == betStacks.player {
-            players[playerIndex].betOnPlayer = bettingAmount
+            players[playerIndex-1].betOnPlayer = bettingAmount
         }
         
         // else caller has passed ivalied arguments
@@ -64,48 +125,6 @@ struct ContentView: View {
         }
 
     }
-    
-    func stackTapped(playerIndex: Int, bettingStack: betStacks)->stackTapOption {
-        
-        if selectedPlayerIndex < players.count {
-            if playerIndex == selectedPlayerIndex {
-                changeBet(playerIndex: selectedPlayerIndex, forStack: bettingStack)
-                selectedPlayerIndex = 10
-                selectedStack = betStacks.noStack
-                return stackTapOption.saved
-            }
-            else {
-                selectedPlayerIndex = playerIndex
-                
-                if bettingStack == betStacks.tie {
-                    bettingAmount = players[playerIndex].betOnTie
-                } else if bettingStack == betStacks.banker {
-                    bettingAmount = players[playerIndex].betOnBanker
-                } else {
-                    bettingAmount = players[playerIndex].betOnPlayer
-                }
-                
-                selectedStack = bettingStack
-                return stackTapOption.selected
-            }
-        }
-        else {
-            selectedPlayerIndex = playerIndex
-            
-            if bettingStack == betStacks.tie {
-                bettingAmount = players[playerIndex].betOnTie
-            } else if bettingStack == betStacks.banker {
-                bettingAmount = players[playerIndex].betOnBanker
-            } else {
-                bettingAmount = players[playerIndex].betOnPlayer
-            }
-            selectedStack = bettingStack
-            
-            return stackTapOption.selected
-        }
-    }
-    
-    
    
     
     
@@ -114,11 +133,12 @@ struct ContentView: View {
         
         ZStack {
             //Backgrond
-            Rectangle()
-                .frame(width: .infinity, height: .infinity)
-                .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-                .foregroundColor(Color(UIColor.systemGray2))
-
+            GeometryReader{ geometry in
+                Rectangle()
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
+                    .foregroundColor(Color(UIColor.systemGray2))
+            }
 
             GeometryReader { geometry in
                 
@@ -235,7 +255,39 @@ struct ContentView: View {
     }
     
     
-    
+    /// Betting area for tie
+    func TieAreaView(forPlayer: Int, center: CGPoint, radius: CGFloat, startAngle: Angle, endAngle: Angle) -> some View {
+//        let forPlayer: Int
+//        let center: CGPoint
+//        let radius: CGFloat
+//        let startAngle: Angle
+//        let endAngle: Angle
+        
+//        var body: some View {
+            return Path { path in
+                path.addArc(
+                    center: center,
+                    radius: radius,
+                    startAngle: startAngle,
+                    endAngle: endAngle,
+                    clockwise: false
+                )
+            }
+            .strokedPath(StrokeStyle(lineCap: .round))
+            .stroke(Color(UIColor.systemGray2), lineWidth: 32)
+            .onTapGesture {
+                
+                print("Player \(forPlayer) going save his bet on tie of \(bettingAmount)")
+                let result = stackTapped(playerIndex: forPlayer, bettingStack: betStacks.tie)
+                if result == stackTapOption.saved {
+                    print("Player \(forPlayer) saved his bet on tie of \(bettingAmount)")
+                }
+
+                print("Player \(forPlayer) bets on Tie")
+            }
+            
+        //}
+    }
     
     
     
@@ -420,35 +472,7 @@ struct BankerHandView: View {
 }
 
 
-/// Betting area for tie
-struct TieAreaView: View {
-    let forPlayer: Int
-    let center: CGPoint
-    let radius: CGFloat
-    let startAngle: Angle
-    let endAngle: Angle
-    
-    var body: some View {
-        Path { path in
-            path.addArc(
-                center: center,
-                radius: radius,
-                startAngle: startAngle,
-                endAngle: endAngle,
-                clockwise: false
-            )
-        }
-        .strokedPath(StrokeStyle(lineCap: .round))
-        .stroke(Color(UIColor.systemGray2), lineWidth: 32)
-        .onTapGesture {
-            
-            stackTapped(playerIndex: forPlayer, bettingStack: betStacks.tie)
-            
-            
-            print("Player \(forPlayer) bets on Tie")
-        }
-    }
-}
+
 
 
 

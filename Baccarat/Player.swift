@@ -9,10 +9,10 @@ import Foundation
 import SwiftUI
 
 struct Player {
-    @State var playerNum: Int
-    @State var betOnTie: Int = 0
-    @State var betOnBanker: Int = 0
-    @State var betOnPlayer: Int = 0
+    var playerNum: Int
+    var betOnTie: Int = 0
+    var betOnBanker: Int = 0
+    var betOnPlayer: Int = 0
     
     
 }
@@ -29,8 +29,4 @@ enum betStacks {
     case noStack
 }
 
-class CurrentStack {
-    static var playerIndex = 0
-    static var betStack = betStacks.noStack
-    
-}
+
