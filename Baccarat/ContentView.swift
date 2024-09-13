@@ -93,6 +93,7 @@ struct ContentView: View {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                         playerHandCard1 = randomNum
                                     }
+                                    
                                     card[randomNum] = true
                                     
                                     
