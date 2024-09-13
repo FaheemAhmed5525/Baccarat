@@ -18,6 +18,17 @@ struct ContentView: View {
     
     @State var bettingAmount: Int = 0
     
+    @State var card: [Int: Bool] = Dictionary(uniqueKeysWithValues: (1...52).map {($0, false) })   //array for check used and unused card
+    
+    /// These var will be used for calculation of  resulat and also to show card on screen in Player's and Banker's hand
+    @State var playerHandCard1 = 0
+    @State var playerHandCard2 = 0
+    @State var playerHandCard3 = 0
+    
+    @State var bankerHandCard1 = 0
+    @State var bankerHandCard2 = 0
+    @State var bankerHandCard3 = 0
+    
     
     
     @State var players: Array<Player> = [Player(playerNum: 1), Player(playerNum: 2), Player(playerNum: 3), Player(playerNum: 4)]
@@ -25,8 +36,7 @@ struct ContentView: View {
     
     
     var body: some View {
-        
-        
+                
         ZStack {
             //Backgrond
             GeometryReader{ geometry in
@@ -69,6 +79,69 @@ struct ContentView: View {
                                 
                                 Button("Start") {
                                     print("drawing cards")
+                                    var randomNum: Int
+                                    
+                                    randomNum = Int.random(in: 1...52)
+                                    
+                                    //get a unused card
+                                    while card[randomNum] == true {
+                                        print("Finding free card. Randome number\(randomNum)")
+                                        randomNum = Int.random(in: 1...52)
+                                    }
+                                    print("Found free card. Randome number\(randomNum)")
+                                    //place first card on player hand
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        playerHandCard1 = randomNum
+                                    }
+                                    card[randomNum] = true
+                                    
+                                    
+                                    
+                                    //get a unused card
+                                    while card[randomNum] == true {
+                                        print("Finding free card. Randome number\(randomNum)")
+                                        randomNum = Int.random(in: 1...52)
+                                    }
+                                    print("Found free card. Randome number\(randomNum)")
+                                    //place first card on banker hand
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        bankerHandCard1 = randomNum
+                                    }
+                                    card[randomNum] = true
+                                    
+                                    
+                                    //get a unused card
+                                    while card[randomNum] == true {
+                                        print("Finding free card. Randome number\(randomNum)")
+                                        randomNum = Int.random(in: 1...52)
+                                    }
+                                    print("Found free card. Randome number\(randomNum)")
+                                    //place second card on player hand
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        playerHandCard2 = randomNum
+                                    }
+                                    card[randomNum] = true
+                                    
+                                    
+                                    
+                                    //get a unused card
+                                    while card[randomNum] == true {
+                                        print("Finding free card. Randome number\(randomNum)")
+                                        randomNum = Int.random(in: 1...52)
+                                    }
+                                    print("Found free card. Randome number\(randomNum)")
+                                    //place second card on banker hand
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                        playerHandCard1 = randomNum
+                                    }
+                                    card[randomNum] = true
+                                    
+                                    print("Player Card 1: \(playerHandCard1)")
+                                    print("Player Card 2: \(playerHandCard2)")
+                                    print("Player Card 3: \(playerHandCard3)")
+                                    print("Banker Card 1: \(bankerHandCard1)")
+                                    print("Banker Card 2: \(bankerHandCard2)")
+                                    print("Banker Card 3: \(bankerHandCard3)")
                                 }
                                 .padding(.bottom, 0)
                                 .background(Color.cyan)
@@ -87,9 +160,48 @@ struct ContentView: View {
                             
                                 // PlayerHand
                             PlayerHandView(width: width/5, height: height/4)
+                                .overlay(
+                                    
+                                    HStack(alignment: .center, spacing: -width/10) {
+                                        Image("Card\(playerHandCard1)")
+                                             .resizable()
+                                             .frame(width: width/10, height: height/4)
+                                             .cornerRadius(8)
+                                             .padding(.leading, 24)
+                                         Image("Card\(playerHandCard2)")
+                                              .resizable()
+                                              .frame(width: width/10, height: height/4)
+                                              .cornerRadius(8)
+                                              .padding(.leading, 24)
+                                         Image("Card\(playerHandCard3)")
+                                              .resizable()
+                                              .frame(width: width/10, height: height/4)
+                                              .cornerRadius(8)
+                                              .padding(.leading, 24)
+                                    }
+                                )
                             
                                 // BankerHand
                             BankerHandView(width: width/5, height: height/4)
+                                .overlay (
+                                    HStack(alignment: .center, spacing: -width/10) {
+                                        Image("Card\(bankerHandCard1)")
+                                             .resizable()
+                                             .frame(width: width/10, height: height/4)
+                                             .cornerRadius(8)
+                                             .padding(.leading, 24)
+                                         Image("Card\(bankerHandCard2)")
+                                              .resizable()
+                                              .frame(width: width/10, height: height/4)
+                                              .cornerRadius(8)
+                                              .padding(.leading, 24)
+                                         Image("Card\(bankerHandCard3)")
+                                              .resizable()
+                                              .frame(width: width/10, height: height/4)
+                                              .cornerRadius(8)
+                                              .padding(.leading, 24)
+                                    }
+                                )
                             
                         }
                         //Spacer(minLength: 00)
